@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>FURIABot</title>
+  <link rel="stylesheet" href="/public/styles.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+</head>
+
+<body>
+  <nav class="navbar">
+    <div class="nav-content">
+      <a href="/" class="nav-logo">
+        <img src="Furia_Esports_logo.png" alt="Logo da FURIA" class="nav-logo-img">
+        FURIABOT
+      </a>
+      <div class="nav-links">
+        <a href="/"><i class="fas fa-home"></i> Início</a>
+        <a href="https://x.com/FURIA" target="_blank"><i class="fab fa-twitter"></i> Twitter</a>
+        <a href="https://www.hltv.org/team/8297/furia" target="_blank"><i class="fas fa-crosshairs"></i> FURIA CS</a>
+        <a href="https://lolesports.com/teams/furia" target="_blank"><i class="fas fa-dragon"></i> FURIA LoL</a>
+        <a href="https://kingsleague.pro/pt/times/50-furia-fc" target="_blank"><i class="fas fa-futbol"></i> FURIA KingsLeague</a>
+      </div>
+      <button class="menu-hamburguer" onclick="toggleMenu()">
+        <i class="fas fa-bars"></i>
+      </button>
+    </div>
+  </nav>
+
+  <main>
+    <div class="chat-container">
+      <img src="/public/Furia_Esports_logo.png" alt="Logo da FURIA" class="logo-imagem">
+      <div class="mensagens" id="mensagens">
+        <div class="mensagem bot">
+          Fala, FURIOSO! 👊🔥<br>
+          O que você quer saber?<br>
+          Me pergunte qualquer notícia sobre a FURIA que eu vou te responder!<br>
+        </div>
+      </div>
+      <div class="entrada-container">
+        <input type="text" id="mensagemInput" class="entrada" placeholder="Digite sua mensagem" />
+        <button class="botao" onclick="enviarMensagem()">Enviar</button>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    async function enviarMensagem() {
+      const input = document.getElementById("mensagemInput");
+      const mensagensDiv = document.getElementById("mensagens");
+      const mensagem = input.value.trim();
+
+      if (!mensagem) return;
+
+      mensagensDiv.innerHTML += `<div class="mensagem usuario"><strong>Você:</strong> ${mensagem}</div>`;
+      input.value = "";
+
+      try {
+        const prompt = `
+Você é o FURIABot, um especialista em tudo relacionado à organização FURIA Esports.
+
+Responda apenas perguntas sobre o time FURIA, incluindo suas modalidades (CS:GO, LoL, Kings League, etc...), jogadores, resultados, torneios e notícias da organização.
+
+Se a pergunta não for relacionada à FURIA, responda educadamente: "Desculpe, eu só posso responder perguntas sobre a FURIA Esports."
+
+Você deve responder as mensagens com intusiasmo, mostrando que também é um torcerdor da Furia e-sports!
+
+Usuário: ${mensagem}
+`;
+
+        const resposta = await fetch("http://localhost:3000/mensagem", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({ mensagem: prompt })
+        });
+
+        if (!resposta.ok) throw new Error("Erro na resposta da API");
+
+        const dados = await resposta.json();
+        mensagensDiv.innerHTML += `<div class="mensagem bot"><strong>FURIABot:</strong> ${dados.resposta}</div>`;
+      } catch (erro) {
+        mensagensDiv.innerHTML += `<div class="mensagem bot"><strong>FURIABot:</strong> Não foi possível se comunicar com o servidor.</div>`;
+        console.error(erro);
+      }
+    }
+
+    function toggleMenu() {
+      const navLinks = document.querySelector(".nav-links");
+      navLinks.classList.toggle("show");
+    }
+  </script>
+</body>
+
+</html>
+
+
+
+
+
+
